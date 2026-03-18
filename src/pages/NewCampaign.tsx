@@ -412,7 +412,7 @@ export default function NewCampaign() {
     auto_optimize: true,
     // Campos solo para UI (no se envían al backend)
     _product_name: "",
-    _target_price_soles: 0,
+    _target_price_soles: "",
   });
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -464,8 +464,8 @@ export default function NewCampaign() {
     if (form._product_name) {
       description = `${form._product_name}. ${description}`;
     }
-    if (form._target_price_soles > 0) {
-      description += ` Precio: S/${form._target_price_soles}.`;
+    if (form._target_price_soles) {
+      description += ` Rango de precios: S/${form._target_price_soles}.`;
     }
 
     // Enriquecer con análisis de imagen si existe
@@ -637,32 +637,29 @@ Hashtags: ${ia.copy_suggestions.hashtags.join(" ")}.`;
             Producto
           </h3>
           <Input
-            label="Nombre del producto"
+            label="Nombre de la campaña"
             name="_product_name"
             value={form._product_name}
             onChange={onChange}
             placeholder="Ej: Consolidado Perfumes Árabes - Marzo 2026"
           />
           <Textarea
-            label="Descripción detallada (la IA lo completa si analizas imágenes)"
+            label="Descripción (la IA lo completa si analizas imágenes)"
             name="product_description"
             value={form.product_description}
             onChange={onChange}
-            placeholder="Describe el producto: características, beneficios, público objetivo... O sube fotos y la IA lo analiza por ti."
+            placeholder="Ej: Consolidado de perfumes árabes al por mayor. Marcas: Lattafa, Al Rehab, Swiss Arabian. Precios desde S/25. Envío a todo el Perú. O sube fotos y la IA lo analiza por ti."
             rows={4}
           />
           <Input
-            label="Precio de venta (S/)"
+            label="Rango de precios (opcional, ej: 25-250)"
             name="_target_price_soles"
-            type="number"
-            value={form._target_price_soles}
+            value={form._target_price_soles || ""}
             onChange={onChange}
-            placeholder="89.90"
-            min={1}
-            step={0.01}
+            placeholder="25-250"
           />
           <Input
-            label="URL de destino (web o WhatsApp)"
+            label="URL de destino (tu web o WhatsApp)"
             name="landing_url"
             value={form.landing_url}
             onChange={onChange}
