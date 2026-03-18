@@ -80,7 +80,7 @@ function Textarea({
   );
 }
 
-function ScoreBar({ label, score, max = 10 }: { label: string; score: number; max?: number }) {
+export function ScoreBar({ label, score, max = 10 }: { label: string; score: number; max?: number }) {
   const pct = (score / max) * 100;
   const color = pct >= 70 ? "#4ade80" : pct >= 50 ? "#f59e0b" : "#f87171";
   return (
