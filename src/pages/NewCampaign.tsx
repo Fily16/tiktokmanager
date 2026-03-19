@@ -456,7 +456,7 @@ export default function NewCampaign() {
     if (selectedFiles.length === 0) return;
     const formData = new FormData();
     selectedFiles.forEach((f) => formData.append("images", f));
-    formData.append("product_context", form.product_description || "Venta de perfumes arabes al por mayor y menor en Peru");
+    formData.append("product_context", form.product_description || "Consolidado de perfumes arabes al por mayor y menor en Peru. Precios desde S/25. Venta por WhatsApp y pagina web.");
 
     analyzeImages.mutate(formData, {
       onSuccess: (data) => {
@@ -651,6 +651,23 @@ Hashtags: ${ia.copy_suggestions.hashtags.join(" ")}.`;
               </>
             )}
           </div>
+
+          {/* Contexto para la IA */}
+          {selectedFiles.length > 0 && (
+            <textarea
+              name="product_description"
+              value={form.product_description}
+              onChange={onChange}
+              placeholder="Describe brevemente qué quieres publicitar. Ej: Consolidado de perfumes árabes, precios desde S/25, quiero que la gente entre a mi web y compre por WhatsApp. El carrusel muestra las marcas y precios de locura..."
+              rows={3}
+              style={{
+                width: "100%", padding: "10px 14px", borderRadius: 8,
+                background: "#0f0f10", border: "1px solid #374151", color: "#e5e7eb",
+                fontSize: 13, resize: "vertical", marginBottom: 12,
+                fontFamily: "inherit",
+              }}
+            />
+          )}
 
           {/* Analyze button */}
           {selectedFiles.length > 0 && (
