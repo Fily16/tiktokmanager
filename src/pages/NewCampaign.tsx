@@ -565,6 +565,15 @@ Hashtags: ${ia.copy_suggestions.hashtags.join(" ")}.`;
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(120px, 1fr))", gap: 10 }}>
                 {previews.map((url, i) => (
                   <div key={i} style={{ position: "relative" }}>
+                    <div style={{
+                      position: "absolute", top: 4, left: 4, zIndex: 2,
+                      background: "#a78bfa", color: "#fff", fontWeight: 700,
+                      width: 26, height: 26, borderRadius: "50%",
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      fontSize: 14, boxShadow: "0 2px 6px rgba(0,0,0,0.4)",
+                    }}>
+                      {i + 1}
+                    </div>
                     <img
                       src={url}
                       alt={`preview-${i}`}
