@@ -410,6 +410,7 @@ export default function NewCampaign() {
     target_roas: 2.0,
     min_viability_roas: 1.5,
     auto_optimize: true,
+    tiktok_post_id: "",  // ID del post de TikTok para Spark Ad
     // Campos solo para UI (no se envían al backend)
     _product_name: "",
     _target_price_soles: "",
@@ -505,11 +506,9 @@ Hashtags: ${ia.copy_suggestions.hashtags.join(" ")}.`;
     formData.append("target_roas", form.target_roas.toString());
     formData.append("min_viability_roas", form.min_viability_roas.toString());
     formData.append("auto_optimize", form.auto_optimize.toString());
-
-    // Agregar imágenes del carrusel
-    selectedFiles.forEach((file) => {
-      formData.append("images", file);
-    });
+    if (form.tiktok_post_id) {
+      formData.append("tiktok_post_id", form.tiktok_post_id);
+    }
 
     publish.mutate(formData);
   };
@@ -546,7 +545,7 @@ Hashtags: ${ia.copy_suggestions.hashtags.join(" ")}.`;
       >
         <Brain size={18} color="#818cf8" style={{ flexShrink: 0, marginTop: 2 }} />
         <div style={{ fontSize: 13, color: "#a5b4fc", lineHeight: 1.6 }}>
-          <strong>Pipeline:</strong> Sube fotos → GPT-4o Vision analiza imagen → detecta productos, precios, audiencia →
+          <strong>Pipeline:</strong> Sube fotos para análisis → GPT-4o Vision detecta productos, precios, audiencia →
           Gradient Boosting predice ROAS → Bayesian valida → Thompson Sampling elige copy → Publica en TikTok.
         </div>
       </div>
@@ -741,6 +740,39 @@ Hashtags: ${ia.copy_suggestions.hashtags.join(" ")}.`;
             onChange={onChange}
             placeholder="https://aromastudiope.com o https://wa.me/51903250695"
           />
+
+          {/* TikTok Post ID para Spark Ad */}
+          <div style={{ marginBottom: 20 }}>
+            <Label>ID del post de TikTok (para crear el anuncio)</Label>
+            <input
+              name="tiktok_post_id"
+              type="text"
+              value={form.tiktok_post_id}
+              onChange={onChange}
+              placeholder="Ej: 7608046693954653461"
+              style={{
+                width: "100%",
+                background: "#0f0f10",
+                border: "1px solid #374151",
+                borderRadius: 8,
+                padding: "10px 14px",
+                color: "#f9fafb",
+                fontSize: 14,
+                outline: "none",
+              }}
+            />
+            <div style={{ marginTop: 6, padding: "8px 12px", background: "#1e1b4b20", border: "1px solid #4f46e530", borderRadius: 8 }}>
+              <p style={{ margin: 0, fontSize: 12, color: "#a5b4fc", lineHeight: 1.5 }}>
+                📱 <strong>¿Cómo obtener el ID?</strong> Publica un post de fotos (carrusel) en tu TikTok @aroma.stvdio,
+                luego ve a TikTok Ads Manager → Crear Anuncio → Usar post de TikTok → copia el ID del post.
+                También puedes encontrarlo en la URL del post: tiktok.com/@usuario/video/<strong>ID_AQUÍ</strong>
+              </p>
+              <p style={{ margin: "4px 0 0", fontSize: 11, color: "#6b7280" }}>
+                Sin este ID, se creará la campaña y grupo de anuncios pero el anuncio final se deberá vincular manualmente.
+              </p>
+            </div>
+          </div>
+
           <div style={{ marginBottom: 20 }}>
             <Label>Objetivo de campaña</Label>
             <select
