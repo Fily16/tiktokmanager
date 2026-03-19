@@ -3,7 +3,6 @@ import { api } from "./client";
 import type {
   ConfigStatus,
   Campaign,
-  AutoPublishRequest,
   AutoPublishResponse,
   AnalyticsDetail,
   ImageAnalysisResponse,
