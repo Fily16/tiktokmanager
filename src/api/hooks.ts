@@ -43,9 +43,12 @@ export const useCampaign = (id: number) =>
 
 export const useAutoPublish = () => {
   const qc = useQueryClient();
-  return useMutation<AutoPublishResponse, Error, AutoPublishRequest>({
-    mutationFn: (data) =>
-      api.post("/campaigns/auto-publish", data).then((r) => r.data),
+  return useMutation<AutoPublishResponse, Error, FormData>({
+    mutationFn: (formData) =>
+      api.post("/campaigns/auto-publish", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+        timeout: 120000, // 2 minutos (sube imágenes + crea todo)
+      }).then((r) => r.data),
     onSuccess: (data) => {
       if (data.status === "published") {
         qc.invalidateQueries({ queryKey: ["campaigns"] });

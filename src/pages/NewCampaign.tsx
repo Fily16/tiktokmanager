@@ -496,17 +496,22 @@ Emoción a activar: ${ia.copy_suggestions.emotion_to_trigger}.
 Hashtags: ${ia.copy_suggestions.hashtags.join(" ")}.`;
     }
 
-    // Enviar solo los campos que el backend espera
-    const payload: AutoPublishRequest = {
-      product_description: description.trim(),
-      budget_total_soles: form.budget_total_soles,
-      landing_url: form.landing_url,
-      objective: form.objective,
-      target_roas: form.target_roas,
-      min_viability_roas: form.min_viability_roas,
-      auto_optimize: form.auto_optimize,
-    };
-    publish.mutate(payload);
+    // Enviar como FormData (multipart) para incluir imágenes
+    const formData = new FormData();
+    formData.append("product_description", description.trim());
+    formData.append("budget_total_soles", form.budget_total_soles.toString());
+    formData.append("landing_url", form.landing_url);
+    formData.append("objective", form.objective);
+    formData.append("target_roas", form.target_roas.toString());
+    formData.append("min_viability_roas", form.min_viability_roas.toString());
+    formData.append("auto_optimize", form.auto_optimize.toString());
+
+    // Agregar imágenes del carrusel
+    selectedFiles.forEach((file) => {
+      formData.append("images", file);
+    });
+
+    publish.mutate(formData);
   };
 
   return (
