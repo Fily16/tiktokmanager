@@ -437,6 +437,21 @@ export default function NewCampaign() {
     if (selectedFiles.length <= 1) setImageAnalysis(null);
   };
 
+  const moveImage = (index: number, direction: "left" | "right") => {
+    const newIndex = direction === "left" ? index - 1 : index + 1;
+    if (newIndex < 0 || newIndex >= previews.length) return;
+    setSelectedFiles((f) => {
+      const arr = [...f];
+      [arr[index], arr[newIndex]] = [arr[newIndex], arr[index]];
+      return arr;
+    });
+    setPreviews((p) => {
+      const arr = [...p];
+      [arr[index], arr[newIndex]] = [arr[newIndex], arr[index]];
+      return arr;
+    });
+  };
+
   const onAnalyzeImages = () => {
     if (selectedFiles.length === 0) return;
     const formData = new FormData();
@@ -591,6 +606,36 @@ Hashtags: ${ia.copy_suggestions.hashtags.join(" ")}.`;
                     >
                       <X size={12} color="#fff" />
                     </button>
+                    {/* Botones de reordenar */}
+                    <div style={{
+                      position: "absolute", bottom: 4, left: "50%", transform: "translateX(-50%)",
+                      display: "flex", gap: 4, zIndex: 2,
+                    }}>
+                      {i > 0 && (
+                        <button
+                          type="button"
+                          onClick={(e) => { e.stopPropagation(); moveImage(i, "left"); }}
+                          style={{
+                            background: "#1f2937", border: "1px solid #374151", borderRadius: 4,
+                            width: 24, height: 24, display: "flex", alignItems: "center",
+                            justifyContent: "center", cursor: "pointer", padding: 0,
+                            color: "#fff", fontSize: 14,
+                          }}
+                        >◀</button>
+                      )}
+                      {i < previews.length - 1 && (
+                        <button
+                          type="button"
+                          onClick={(e) => { e.stopPropagation(); moveImage(i, "right"); }}
+                          style={{
+                            background: "#1f2937", border: "1px solid #374151", borderRadius: 4,
+                            width: 24, height: 24, display: "flex", alignItems: "center",
+                            justifyContent: "center", cursor: "pointer", padding: 0,
+                            color: "#fff", fontSize: 14,
+                          }}
+                        >▶</button>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>
