@@ -501,7 +501,7 @@ Hashtags: ${ia.copy_suggestions.hashtags.join(" ")}.`;
     formData.append("product_description", description.trim());
     formData.append("budget_total_soles", form.budget_total_soles.toString());
     formData.append("landing_url", form.landing_url);
-    formData.append("objective", form.objective);
+    formData.append("objective", form.objective || "CONVERSIONS");
     formData.append("target_roas", form.target_roas.toString());
     formData.append("min_viability_roas", form.min_viability_roas.toString());
     formData.append("auto_optimize", form.auto_optimize.toString());
