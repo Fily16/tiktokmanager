@@ -54,7 +54,7 @@ export interface AutoPublishRequest {
 }
 
 export interface AutoPublishResponse {
-  status: "published" | "blocked";
+  status: "published" | "blocked" | "draft_carousel";
   reason?: string;
   campaign_id?: number;
   tiktok_campaign_id?: string;

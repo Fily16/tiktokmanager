@@ -232,6 +232,7 @@ function ImageAnalysisCard({ analysis }: { analysis: ImageAnalysisResponse }) {
 function ResultCard({ result }: { result: AutoPublishResponse }) {
   const navigate = useNavigate();
   const isPublished = result.status === "published";
+  const isDraftCarousel = result.status === "draft_carousel";
   const ds = result.data_science_decisions;
   const bayesian = ds?.bayesian_analysis;
   const ml = ds?.ml_prediction;
@@ -244,7 +245,7 @@ function ResultCard({ result }: { result: AutoPublishResponse }) {
     <div
       style={{
         background: "#16161a",
-        border: `1px solid ${isPublished ? "#16a34a40" : "#dc262640"}`,
+        border: `1px solid ${isPublished ? "#16a34a40" : isDraftCarousel ? "#f59e0b40" : "#dc262640"}`,
         borderRadius: 16,
         padding: 28,
         marginTop: 32,
@@ -252,24 +253,54 @@ function ResultCard({ result }: { result: AutoPublishResponse }) {
     >
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 24 }}>
-        {isPublished ? <CheckCircle size={28} color="#4ade80" /> : <AlertTriangle size={28} color="#f87171" />}
+        {isPublished ? <CheckCircle size={28} color="#4ade80" /> : isDraftCarousel ? <Upload size={28} color="#f59e0b" /> : <AlertTriangle size={28} color="#f87171" />}
         <div>
           <h3 style={{ margin: 0, fontSize: 18, fontWeight: 700, color: "#f9fafb" }}>
-            {isPublished ? "Campaña publicada en TikTok" : "Campaña bloqueada — protección activa"}
+            {isPublished ? "Campaña publicada en TikTok" : isDraftCarousel ? "Carrusel enviado a TikTok — pendiente de publicar" : "Campaña bloqueada — protección activa"}
           </h3>
           {isPublished && result.tiktok_campaign_id && (
             <p style={{ margin: "4px 0 0", color: "#6b7280", fontSize: 13 }}>
               ID TikTok: {result.tiktok_campaign_id} | {result.campaign_name}
             </p>
           )}
-          {!isPublished && result.reason && (
+          {isDraftCarousel && (
+            <p style={{ margin: "4px 0 0", color: "#f59e0b", fontSize: 13, lineHeight: 1.5 }}>
+              {result.campaign_name}
+            </p>
+          )}
+          {!isPublished && !isDraftCarousel && result.reason && (
             <p style={{ margin: "4px 0 0", color: "#f87171", fontSize: 13, lineHeight: 1.5 }}>{result.reason}</p>
           )}
         </div>
       </div>
 
-      {/* KPIs principales (solo si se publicó) */}
-      {isPublished && ds && (
+      {/* Instrucciones para draft_carousel */}
+      {isDraftCarousel && (
+        <div style={{
+          background: "#1c1917",
+          border: "1px solid #f59e0b40",
+          borderRadius: 10,
+          padding: "16px 20px",
+          marginBottom: 24,
+        }}>
+          <div style={{ fontSize: 15, fontWeight: 700, color: "#f59e0b", marginBottom: 12 }}>
+            Siguiente paso para activar tu campaña:
+          </div>
+          <div style={{ fontSize: 13, color: "#d1d5db", lineHeight: 1.8 }}>
+            <div>1. Abre la app de <strong style={{ color: "#f9fafb" }}>TikTok</strong> en tu celular</div>
+            <div>2. Ve a tu <strong style={{ color: "#f9fafb" }}>inbox/bandeja</strong> — encontrarás el carrusel como borrador</div>
+            <div>3. Edita si quieres (texto, hashtags) y <strong style={{ color: "#f9fafb" }}>publica el post</strong></div>
+            <div>4. Una vez publicado, copia el <strong style={{ color: "#f9fafb" }}>ID del post</strong> desde la URL (tiktok.com/@usuario/video/<strong>ID</strong>)</div>
+            <div>5. Vuelve aquí, pega el ID en el campo <strong style={{ color: "#f9fafb" }}>"ID del post de TikTok"</strong> y publica de nuevo</div>
+          </div>
+          <div style={{ marginTop: 12, fontSize: 12, color: "#6b7280" }}>
+            Esto creará automáticamente la campaña + Spark Ad usando tu post orgánico como anuncio.
+          </div>
+        </div>
+      )}
+
+      {/* KPIs principales */}
+      {(isPublished || isDraftCarousel) && ds && (
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 12, marginBottom: 24 }}>
           {[
             { label: "ROAS Predicho (ML)", value: `${ml?.predicted_roas?.toFixed(2)}x`, color: "#60a5fa" },
