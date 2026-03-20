@@ -74,6 +74,19 @@ export const useCampaignAnalytics = (id: number) =>
     refetchInterval: 120000,
   });
 
+export const useSyncMetrics = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (campaignId: number) =>
+      api.post(`/analytics/campaign/${campaignId}/sync`).then((r) => r.data),
+    onSuccess: (_data, campaignId) => {
+      qc.invalidateQueries({ queryKey: ["analytics", campaignId] });
+      qc.invalidateQueries({ queryKey: ["campaign", campaignId] });
+      qc.invalidateQueries({ queryKey: ["campaigns"] });
+    },
+  });
+};
+
 // ── AI Advisor ────────────────────────────────────────────────────────
 export const useScoreCopy = () =>
   useMutation({

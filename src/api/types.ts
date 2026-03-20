@@ -28,9 +28,16 @@ export interface CampaignMetric {
   spend_soles: number;
   revenue_soles: number;
   ctr: number;
+  ctr_percent: number;
   cpm: number;
+  cpm_soles: number;
+  cpc: number;
+  cpc_soles: number;
+  cpa: number;
+  cpa_soles: number;
   roas: number;
   recorded_at: string;
+  date: string;
 }
 
 export interface AutoDecision {
