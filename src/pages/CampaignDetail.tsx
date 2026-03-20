@@ -12,7 +12,7 @@ import {
 import {
   ArrowLeft, Pause, Play, TrendingUp, Activity, Brain, RefreshCw,
   Eye, MousePointerClick, ShoppingCart, DollarSign, Target, Zap,
-  BarChart3, PieChart as PieIcon, ArrowUpRight, ArrowDownRight, Minus,
+  BarChart3, ArrowUpRight, ArrowDownRight,
 } from "lucide-react";
 
 const fmt = (n: number | null | undefined, prefix = "", suffix = "", dec = 2) =>
