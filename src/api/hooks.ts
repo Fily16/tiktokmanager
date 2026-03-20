@@ -96,3 +96,13 @@ export const useAnalyzeImages = () =>
         headers: { "Content-Type": "multipart/form-data" },
       }).then((r) => r.data),
   });
+
+// ── Content Posting API (Carrusel) ──────────────────────────────────
+export const usePublishCarousel = () =>
+  useMutation<any, Error, FormData>({
+    mutationFn: (formData) =>
+      api.post("/content/carousel-upload", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+        timeout: 60000,
+      }).then((r) => r.data),
+  });
