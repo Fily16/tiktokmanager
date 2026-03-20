@@ -401,6 +401,8 @@ export default function NewCampaign() {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
   const [imageAnalysis, setImageAnalysis] = useState<ImageAnalysisResponse | null>(null);
+  const [dragIndex, setDragIndex] = useState<number | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
 
   const [form, setForm] = useState({
     product_description: "",
@@ -438,19 +440,40 @@ export default function NewCampaign() {
     if (selectedFiles.length <= 1) setImageAnalysis(null);
   };
 
-  const moveImage = (index: number, direction: "left" | "right") => {
-    const newIndex = direction === "left" ? index - 1 : index + 1;
-    if (newIndex < 0 || newIndex >= previews.length) return;
+  const onDragStart = (index: number) => {
+    setDragIndex(index);
+  };
+
+  const onDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    setDragOverIndex(index);
+  };
+
+  const onDrop = (index: number) => {
+    if (dragIndex === null || dragIndex === index) {
+      setDragIndex(null);
+      setDragOverIndex(null);
+      return;
+    }
     setSelectedFiles((f) => {
       const arr = [...f];
-      [arr[index], arr[newIndex]] = [arr[newIndex], arr[index]];
+      const [moved] = arr.splice(dragIndex, 1);
+      arr.splice(index, 0, moved);
       return arr;
     });
     setPreviews((p) => {
       const arr = [...p];
-      [arr[index], arr[newIndex]] = [arr[newIndex], arr[index]];
+      const [moved] = arr.splice(dragIndex, 1);
+      arr.splice(index, 0, moved);
       return arr;
     });
+    setDragIndex(null);
+    setDragOverIndex(null);
+  };
+
+  const onDragEnd = () => {
+    setDragIndex(null);
+    setDragOverIndex(null);
   };
 
   const onAnalyzeImages = () => {
@@ -583,7 +606,22 @@ Hashtags: ${ia.copy_suggestions.hashtags.join(" ")}.`;
             {previews.length > 0 ? (
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(120px, 1fr))", gap: 10 }}>
                 {previews.map((url, i) => (
-                  <div key={i} style={{ position: "relative" }}>
+                  <div
+                    key={i}
+                    draggable
+                    onDragStart={(e) => { e.stopPropagation(); onDragStart(i); }}
+                    onDragOver={(e) => { e.stopPropagation(); onDragOver(e, i); }}
+                    onDrop={(e) => { e.stopPropagation(); onDrop(i); }}
+                    onDragEnd={onDragEnd}
+                    style={{
+                      position: "relative",
+                      cursor: "grab",
+                      opacity: dragIndex === i ? 0.4 : 1,
+                      border: dragOverIndex === i && dragIndex !== i ? "2px solid #a78bfa" : "2px solid transparent",
+                      borderRadius: 10,
+                      transition: "opacity 0.15s, border-color 0.15s",
+                    }}
+                  >
                     <div style={{
                       position: "absolute", top: 4, left: 4, zIndex: 2,
                       background: "#a78bfa", color: "#fff", fontWeight: 700,
@@ -596,7 +634,7 @@ Hashtags: ${ia.copy_suggestions.hashtags.join(" ")}.`;
                     <img
                       src={url}
                       alt={`preview-${i}`}
-                      style={{ width: "100%", height: 120, objectFit: "cover", borderRadius: 8 }}
+                      style={{ width: "100%", height: 120, objectFit: "cover", borderRadius: 8, pointerEvents: "none" }}
                     />
                     <button
                       type="button"
@@ -610,36 +648,6 @@ Hashtags: ${ia.copy_suggestions.hashtags.join(" ")}.`;
                     >
                       <X size={12} color="#fff" />
                     </button>
-                    {/* Botones de reordenar */}
-                    <div style={{
-                      position: "absolute", bottom: 4, left: "50%", transform: "translateX(-50%)",
-                      display: "flex", gap: 4, zIndex: 2,
-                    }}>
-                      {i > 0 && (
-                        <button
-                          type="button"
-                          onClick={(e) => { e.stopPropagation(); moveImage(i, "left"); }}
-                          style={{
-                            background: "#1f2937", border: "1px solid #374151", borderRadius: 4,
-                            width: 24, height: 24, display: "flex", alignItems: "center",
-                            justifyContent: "center", cursor: "pointer", padding: 0,
-                            color: "#fff", fontSize: 14,
-                          }}
-                        >◀</button>
-                      )}
-                      {i < previews.length - 1 && (
-                        <button
-                          type="button"
-                          onClick={(e) => { e.stopPropagation(); moveImage(i, "right"); }}
-                          style={{
-                            background: "#1f2937", border: "1px solid #374151", borderRadius: 4,
-                            width: 24, height: 24, display: "flex", alignItems: "center",
-                            justifyContent: "center", cursor: "pointer", padding: 0,
-                            color: "#fff", fontSize: 14,
-                          }}
-                        >▶</button>
-                      )}
-                    </div>
                   </div>
                 ))}
               </div>
@@ -655,6 +663,12 @@ Hashtags: ${ia.copy_suggestions.hashtags.join(" ")}.`;
               </>
             )}
           </div>
+
+          {previews.length > 1 && (
+            <p style={{ margin: "0 0 12px", fontSize: 12, color: "#6b7280", textAlign: "center" }}>
+              Arrastra las fotos para cambiar el orden del carrusel
+            </p>
+          )}
 
           {/* Contexto para la IA */}
           {selectedFiles.length > 0 && (
