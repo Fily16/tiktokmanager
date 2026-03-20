@@ -564,6 +564,9 @@ Hashtags: ${ia.copy_suggestions.hashtags.join(" ")}.`;
       formData.append("tiktok_post_id", form.tiktok_post_id);
     }
 
+    // Incluir imágenes seleccionadas para crear carrusel
+    selectedFiles.forEach((f) => formData.append("images", f));
+
     publish.mutate(formData);
   };
 
