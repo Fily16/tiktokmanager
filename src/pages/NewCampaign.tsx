@@ -957,99 +957,33 @@ Hashtags: ${ia.copy_suggestions.hashtags.join(" ")}.`;
           </div>
         )}
 
-        {/* Errores */}
+        {/* Error */}
         {publish.isError && (
           <div style={{ background: "#1f0a0a", border: "1px solid #ef444440", borderRadius: 10, padding: "14px 18px", marginBottom: 20, display: "flex", gap: 10, alignItems: "flex-start" }}>
             <AlertTriangle size={16} color="#f87171" style={{ flexShrink: 0, marginTop: 2 }} />
             <div style={{ color: "#f87171", fontSize: 13 }}>{publish.error?.message}</div>
           </div>
         )}
-        {publishCarousel.isError && (
-          <div style={{ background: "#1f0a0a", border: "1px solid #ef444440", borderRadius: 10, padding: "14px 18px", marginBottom: 20, display: "flex", gap: 10, alignItems: "flex-start" }}>
-            <AlertTriangle size={16} color="#f87171" style={{ flexShrink: 0, marginTop: 2 }} />
-            <div style={{ color: "#f87171", fontSize: 13 }}>{publishCarousel.error?.message}</div>
-          </div>
-        )}
 
-        {/* ── PASO 1: Publicar Carrusel ─────────────────────── */}
-        {selectedFiles.length > 0 && !form.tiktok_post_id && !carouselResult && (
-          <div style={{ marginBottom: 16 }}>
-            <button
-              type="button"
-              onClick={onPublishCarousel}
-              disabled={publishCarousel.isPending}
-              style={{
-                display: "flex", alignItems: "center", justifyContent: "center", gap: 10,
-                width: "100%",
-                background: publishCarousel.isPending ? "#374151" : "linear-gradient(135deg, #7c3aed, #a78bfa)",
-                color: "#fff", border: "none", borderRadius: 12, padding: "16px 24px",
-                fontSize: 16, fontWeight: 700,
-                cursor: publishCarousel.isPending ? "not-allowed" : "pointer",
-              }}
-            >
-              {publishCarousel.isPending ? (
-                <><Upload size={20} /> Enviando carrusel a TikTok...</>
-              ) : (
-                <><Upload size={20} /> Paso 1: Publicar Carrusel en TikTok</>
-              )}
-            </button>
-            <p style={{ textAlign: "center", color: "#6b7280", fontSize: 12, marginTop: 8 }}>
-              Envía las fotos como borrador a tu inbox de TikTok. Luego publícalo desde la app.
-            </p>
-          </div>
-        )}
-
-        {/* Resultado del carrusel */}
-        {carouselResult && !form.tiktok_post_id && (
-          <div style={{
-            background: "#1c1917", border: "1px solid #f59e0b40", borderRadius: 12,
-            padding: "16px 20px", marginBottom: 16,
-          }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
-              <CheckCircle size={20} color="#4ade80" />
-              <span style={{ fontSize: 15, fontWeight: 700, color: "#4ade80" }}>
-                Carrusel enviado ({carouselResult.photos_count} fotos)
-              </span>
-            </div>
-            <div style={{ fontSize: 13, color: "#d1d5db", lineHeight: 1.8 }}>
-              <div>1. Abre <strong style={{ color: "#f9fafb" }}>TikTok</strong> en tu celular</div>
-              <div>2. Ve a tu <strong style={{ color: "#f9fafb" }}>inbox</strong> - encontrarás el borrador</div>
-              <div>3. <strong style={{ color: "#f9fafb" }}>Publica</strong> el post (edita texto/hashtags si quieres)</div>
-              <div>4. Copia el <strong style={{ color: "#f9fafb" }}>ID del post</strong> desde la URL</div>
-              <div>5. Pégalo arriba en <strong style={{ color: "#f9fafb" }}>"ID del post de TikTok"</strong></div>
-            </div>
-          </div>
-        )}
-
-        {/* ── PASO 2: Auto-Publicar Campaña ─────────────────── */}
+        {/* Submit */}
         <button
           type="submit"
-          disabled={publish.isPending || (!form.tiktok_post_id && selectedFiles.length > 0 && !carouselResult)}
+          disabled={publish.isPending}
           style={{
             display: "flex", alignItems: "center", justifyContent: "center", gap: 10,
             width: "100%",
-            background: publish.isPending || (!form.tiktok_post_id && selectedFiles.length > 0 && !carouselResult)
-              ? "#374151"
-              : "linear-gradient(135deg,#ff2d55,#ff6b35)",
+            background: publish.isPending ? "#374151" : "linear-gradient(135deg,#ff2d55,#ff6b35)",
             color: "#fff", border: "none", borderRadius: 12, padding: "16px 24px",
             fontSize: 16, fontWeight: 700,
-            cursor: publish.isPending || (!form.tiktok_post_id && selectedFiles.length > 0 && !carouselResult) ? "not-allowed" : "pointer",
+            cursor: publish.isPending ? "not-allowed" : "pointer",
           }}
         >
           {publish.isPending ? (
             <><TrendingUp size={20} /> Analizando con IA y creando campaña...</>
-          ) : form.tiktok_post_id ? (
-            <><Rocket size={20} /> Paso 2: Auto-Publicar Campaña con Spark Ad</>
           ) : (
             <><Rocket size={20} /> Auto-Publicar Campaña</>
           )}
         </button>
-
-        {!form.tiktok_post_id && selectedFiles.length > 0 && !carouselResult && (
-          <p style={{ textAlign: "center", color: "#f59e0b", fontSize: 12, marginTop: 8 }}>
-            Primero publica el carrusel (Paso 1) o pega un ID de post existente
-          </p>
-        )}
 
         {publish.isPending && (
           <p style={{ textAlign: "center", color: "#6b7280", fontSize: 13, marginTop: 12 }}>
