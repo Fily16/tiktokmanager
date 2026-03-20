@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAutoPublish, useAnalyzeImages, usePublishCarousel } from "../api/hooks";
+import { useAutoPublish, useAnalyzeImages } from "../api/hooks";
 import type { AutoPublishRequest, AutoPublishResponse, ImageAnalysisResponse } from "../api/types";
 import {
   Rocket, Brain, TrendingUp, CheckCircle, AlertTriangle, ChevronRight,
@@ -428,8 +428,6 @@ function ResultCard({ result }: { result: AutoPublishResponse }) {
 export default function NewCampaign() {
   const publish = useAutoPublish();
   const analyzeImages = useAnalyzeImages();
-  const publishCarousel = usePublishCarousel();
-  const [carouselResult, setCarouselResult] = useState<{ publish_id: string; photos_count: number } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
@@ -575,29 +573,6 @@ Hashtags: ${ia.copy_suggestions.hashtags.join(" ")}.`;
     publish.mutate(formData);
   };
 
-  const onPublishCarousel = () => {
-    if (selectedFiles.length === 0) return;
-    const formData = new FormData();
-    selectedFiles.forEach((f) => formData.append("images", f));
-
-    // Usar el mejor copy del análisis como título, o descripción del usuario
-    let title = "";
-    if (imageAnalysis) {
-      const hooks = imageAnalysis.image_analysis.copy_suggestions.hooks;
-      const hashtags = imageAnalysis.image_analysis.copy_suggestions.hashtags;
-      title = hooks[0] || "";
-      if (hashtags.length > 0) title += " " + hashtags.slice(0, 5).join(" ");
-    } else {
-      title = form.product_description.slice(0, 150);
-    }
-    formData.append("title", title);
-
-    publishCarousel.mutate(formData, {
-      onSuccess: (data) => {
-        setCarouselResult(data);
-      },
-    });
-  };
 
   return (
     <div style={{ padding: 32, maxWidth: 780 }}>
