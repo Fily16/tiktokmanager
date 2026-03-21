@@ -844,11 +844,11 @@ Hashtags: ${ia.copy_suggestions.hashtags.join(" ")}.`;
                 outline: "none",
               }}
             >
-              <option value="CONVERSIONS">Conversiones</option>
-              <option value="TRAFFIC">Tráfico (visitas a web)</option>
+              <option value="CONVERSIONS">Conversiones (optimiza para una accion en tu web)</option>
+              <option value="TRAFFIC">Trafico (maximizar visitas a tu web)</option>
               <option value="VIDEO_VIEWS">Visualizaciones de video</option>
-              <option value="REACH">Alcance (máximas personas)</option>
-              <option value="LEAD_GENERATION">Generación de leads</option>
+              <option value="REACH">Alcance (mostrar a la mayor cantidad de personas)</option>
+              <option value="LEAD_GENERATION">Leads (formulario dentro de TikTok, sin usar tu web)</option>
             </select>
           </div>
 
