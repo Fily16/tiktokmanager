@@ -440,7 +440,7 @@ export default function NewCampaign() {
     budget_total_soles: 50,
     landing_url: "",
     objective: "CONVERSIONS" as AutoPublishRequest["objective"],
-    conversion_event: "CONTACT",  // Evento del pixel para optimizar
+    conversion_event: "VIEW_CONTENT",  // Evento del pixel para optimizar (CONTACT está deshabilitado)
     target_roas: 2.0,
     min_viability_roas: 1.5,
     auto_optimize: true,
@@ -558,7 +558,7 @@ Hashtags: ${ia.copy_suggestions.hashtags.join(" ")}.`;
     formData.append("budget_total_soles", form.budget_total_soles.toString());
     formData.append("landing_url", form.landing_url);
     formData.append("objective", form.objective || "CONVERSIONS");
-    formData.append("conversion_event", form.conversion_event || "CONTACT");
+    formData.append("conversion_event", form.conversion_event || "VIEW_CONTENT");
     formData.append("target_roas", form.target_roas.toString());
     formData.append("min_viability_roas", form.min_viability_roas.toString());
     formData.append("auto_optimize", form.auto_optimize.toString());
@@ -870,12 +870,12 @@ Hashtags: ${ia.copy_suggestions.hashtags.join(" ")}.`;
                   outline: "none",
                 }}
               >
-                <option value="CONTACT">📱 Contacto WhatsApp (personas que escriben)</option>
-                <option value="COMPLETE_PAYMENT">💰 Venta completada (personas que pagan con Yape)</option>
-                <option value="INITIATE_CHECKOUT">🛒 Inicio de checkout (personas que van a pagar)</option>
+                <option value="VIEW_CONTENT">👁️ Ver contenido (más datos, mejor optimización)</option>
                 <option value="ADD_TO_CART">🛍️ Agregar al carrito (personas interesadas)</option>
-                <option value="PLACE_AN_ORDER">📦 Realizar pedido (personas que confirman)</option>
-                <option value="VIEW_CONTENT">👁️ Ver producto (máximo alcance en catálogo)</option>
+                <option value="INITIATE_CHECKOUT">🛒 Inicio de checkout (personas que van a pagar)</option>
+                <option value="SEARCH">🔍 Búsqueda (personas que buscan en tu web)</option>
+                <option value="COMPLETE_PAYMENT">💰 Venta completada (personas que pagan)</option>
+                <option value="CONTACT" disabled>📱 Contacto WhatsApp (⚠️ deshabilitado en tu pixel)</option>
               </select>
               <p style={{ fontSize: 11, color: "#6b7280", marginTop: 6 }}>
                 TikTok buscará personas similares a las que ya hicieron esta acción en tu web
