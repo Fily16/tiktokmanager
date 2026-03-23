@@ -832,7 +832,11 @@ Hashtags: ${ia.copy_suggestions.hashtags.join(" ")}.`;
             <select
               name="objective"
               value={form.objective}
-              onChange={(e) => setForm((f) => ({ ...f, objective: e.target.value as AutoPublishRequest["objective"] }))}
+              onChange={(e) => {
+                const newObj = e.target.value as AutoPublishRequest["objective"];
+                const defaultEvent = newObj === "LEAD_GENERATION" ? "CONTACT" : "VIEW_CONTENT";
+                setForm((f) => ({ ...f, objective: newObj, conversion_event: defaultEvent }));
+              }}
               style={{
                 width: "100%",
                 background: "#0f0f10",
@@ -844,11 +848,8 @@ Hashtags: ${ia.copy_suggestions.hashtags.join(" ")}.`;
                 outline: "none",
               }}
             >
-              <option value="CONVERSIONS">Conversiones (optimiza para una accion en tu web)</option>
-              <option value="TRAFFIC">Trafico (maximizar visitas a tu web)</option>
-              <option value="VIDEO_VIEWS">Visualizaciones de video</option>
-              <option value="REACH">Alcance (mostrar a la mayor cantidad de personas)</option>
-              <option value="LEAD_GENERATION">Leads (formulario dentro de TikTok, sin usar tu web)</option>
+              <option value="CONVERSIONS">Ventas (optimiza para compras en tu web)</option>
+              <option value="LEAD_GENERATION">Generación de clientes potenciales (optimiza para contactos/leads)</option>
             </select>
           </div>
 
@@ -870,12 +871,21 @@ Hashtags: ${ia.copy_suggestions.hashtags.join(" ")}.`;
                   outline: "none",
                 }}
               >
-                <option value="VIEW_CONTENT">👁️ Ver contenido (más datos, mejor optimización)</option>
-                <option value="ADD_TO_CART">🛍️ Agregar al carrito (personas interesadas)</option>
-                <option value="INITIATE_CHECKOUT">🛒 Inicio de checkout (personas que van a pagar)</option>
-                <option value="SEARCH">🔍 Búsqueda (personas que buscan en tu web)</option>
-                <option value="COMPLETE_PAYMENT">💰 Venta completada (personas que pagan)</option>
-                <option value="CONTACT" disabled>📱 Contacto WhatsApp (⚠️ deshabilitado en tu pixel)</option>
+                {form.objective === "LEAD_GENERATION" ? (
+                  <>
+                    <option value="CONTACT">Contacto WhatsApp (personas que te contactan)</option>
+                    <option value="VIEW_CONTENT">Ver contenido (personas que visitan tu web)</option>
+                    <option value="SEARCH">Busqueda (personas que buscan en tu web)</option>
+                  </>
+                ) : (
+                  <>
+                    <option value="VIEW_CONTENT">Ver contenido (mas datos, mejor optimizacion)</option>
+                    <option value="ADD_TO_CART">Agregar al carrito (personas interesadas)</option>
+                    <option value="INITIATE_CHECKOUT">Inicio de checkout (personas que van a pagar)</option>
+                    <option value="SEARCH">Busqueda (personas que buscan en tu web)</option>
+                    <option value="COMPLETE_PAYMENT">Venta completada (personas que pagan)</option>
+                  </>
+                )}
               </select>
               <p style={{ fontSize: 11, color: "#6b7280", marginTop: 6 }}>
                 TikTok buscará personas similares a las que ya hicieron esta acción en tu web
