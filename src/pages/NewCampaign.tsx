@@ -4,7 +4,7 @@ import { useAutoPublish, useAnalyzeImages } from "../api/hooks";
 import type { AutoPublishRequest, AutoPublishResponse, ImageAnalysisResponse } from "../api/types";
 import {
   Rocket, Brain, TrendingUp, CheckCircle, AlertTriangle, ChevronRight,
-  Upload, Image, Star, Target, Users, Hash, Sparkles, Eye, X,
+  Upload, Image, Star, Target, Users, Hash, Sparkles, Eye, X, Film, Play,
 } from "lucide-react";
 
 function Label({ children }: { children: React.ReactNode }) {
@@ -458,10 +458,16 @@ export default function NewCampaign() {
     }));
   };
 
+  const isVideoFile = (file: File) => file.type.startsWith("video/");
+  const isImageFile = (file: File) => file.type.startsWith("image/");
+
   const onFilesSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []).slice(0, 5);
-    setSelectedFiles(files);
-    const urls = files.map((f) => URL.createObjectURL(f));
+    const files = Array.from(e.target.files || []);
+    // Si es un video, solo 1 a la vez. Si son imágenes, hasta 10 (se convierten a video carrusel)
+    const hasVideo = files.some(isVideoFile);
+    const limited = hasVideo ? files.filter(isVideoFile).slice(0, 1) : files.filter(isImageFile).slice(0, 10);
+    setSelectedFiles(limited);
+    const urls = limited.map((f) => URL.createObjectURL(f));
     setPreviews(urls);
     setImageAnalysis(null);
   };
@@ -567,9 +573,15 @@ Hashtags: ${ia.copy_suggestions.hashtags.join(" ")}.`;
     }
 
     if (form.tiktok_post_id) {
-      // Solo enviar imágenes si no tiene post ID (el Spark Ad no necesita imágenes)
+      // Solo enviar media si no tiene post ID (el Spark Ad no necesita imágenes)
     } else {
-      selectedFiles.forEach((f) => formData.append("images", f));
+      const videos = selectedFiles.filter(isVideoFile);
+      const images = selectedFiles.filter(isImageFile);
+      if (videos.length > 0) {
+        formData.append("video", videos[0]);
+      } else {
+        images.forEach((f) => formData.append("images", f));
+      }
     }
 
     publish.mutate(formData);
@@ -618,6 +630,7 @@ Hashtags: ${ia.copy_suggestions.hashtags.join(" ")}.`;
         <div style={{ background: "#16161a", border: "1px solid #1f2937", borderRadius: 12, padding: 24, marginBottom: 20 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
             <Image size={18} color="#a78bfa" />
+            <Film size={18} color="#a78bfa" />
             <h3 style={{ margin: 0, fontSize: 15, fontWeight: 600, color: "#f9fafb" }}>
               Piezas Publicitarias
             </h3>
@@ -637,7 +650,7 @@ Hashtags: ${ia.copy_suggestions.hashtags.join(" ")}.`;
             <input
               ref={fileInputRef}
               type="file"
-              accept="image/*"
+              accept="image/*,video/mp4,video/quicktime,video/webm"
               multiple
               onChange={onFilesSelected}
               style={{ display: "none" }}
@@ -671,11 +684,30 @@ Hashtags: ${ia.copy_suggestions.hashtags.join(" ")}.`;
                     }}>
                       {i + 1}
                     </div>
-                    <img
-                      src={url}
-                      alt={`preview-${i}`}
-                      style={{ width: "100%", height: 120, objectFit: "cover", borderRadius: 8, pointerEvents: "none" }}
-                    />
+                    {selectedFiles[i] && isVideoFile(selectedFiles[i]) ? (
+                      <div style={{ position: "relative", width: "100%", height: 120, borderRadius: 8, overflow: "hidden", background: "#1a1a2e" }}>
+                        <video src={url} style={{ width: "100%", height: "100%", objectFit: "cover" }} muted />
+                        <div style={{
+                          position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)",
+                          background: "rgba(0,0,0,0.6)", borderRadius: "50%", width: 36, height: 36,
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                        }}>
+                          <Play size={18} color="#fff" fill="#fff" />
+                        </div>
+                        <div style={{
+                          position: "absolute", bottom: 4, right: 6, background: "rgba(0,0,0,0.7)",
+                          borderRadius: 4, padding: "1px 6px", fontSize: 10, color: "#a78bfa", fontWeight: 600,
+                        }}>
+                          VIDEO
+                        </div>
+                      </div>
+                    ) : (
+                      <img
+                        src={url}
+                        alt={`preview-${i}`}
+                        style={{ width: "100%", height: 120, objectFit: "cover", borderRadius: 8, pointerEvents: "none" }}
+                      />
+                    )}
                     <button
                       type="button"
                       onClick={(e) => { e.stopPropagation(); removeImage(i); }}
@@ -695,10 +727,13 @@ Hashtags: ${ia.copy_suggestions.hashtags.join(" ")}.`;
               <>
                 <Upload size={32} color="#6b7280" style={{ marginBottom: 8 }} />
                 <div style={{ color: "#9ca3af", fontSize: 14, marginBottom: 4 }}>
-                  Click para subir tus fotos de producto / piezas
+                  Click para subir tus fotos o video de producto
                 </div>
                 <div style={{ color: "#6b7280", fontSize: 12 }}>
-                  Hasta 5 imágenes (JPG, PNG). GPT-4o las analizará automáticamente.
+                  <strong>Video:</strong> 1 video (MP4, MOV) de hasta 10 min y 500MB
+                </div>
+                <div style={{ color: "#6b7280", fontSize: 12, marginTop: 2 }}>
+                  <strong>Imágenes:</strong> Hasta 10 fotos (JPG, PNG) — se combinan en un video carrusel automáticamente
                 </div>
               </>
             )}
@@ -706,7 +741,8 @@ Hashtags: ${ia.copy_suggestions.hashtags.join(" ")}.`;
 
           {previews.length > 1 && (
             <p style={{ margin: "0 0 12px", fontSize: 12, color: "#6b7280", textAlign: "center" }}>
-              Arrastra las fotos para cambiar el orden del carrusel
+              <Film size={12} style={{ verticalAlign: "middle", marginRight: 4 }} />
+              {selectedFiles.length} imágenes = video carrusel de {selectedFiles.length * 3}s. Arrastra para cambiar el orden.
             </p>
           )}
 
@@ -744,7 +780,8 @@ Hashtags: ${ia.copy_suggestions.hashtags.join(" ")}.`;
               {analyzeImages.isPending ? (
                 <><Sparkles size={16} /> GPT-4o Vision analizando imágenes...</>
               ) : (
-                <><Sparkles size={16} /> Analizar con IA ({selectedFiles.length} {selectedFiles.length === 1 ? "imagen" : "imágenes"})</>
+                <><Sparkles size={16} /> Analizar con IA ({selectedFiles.length} {selectedFiles.some(isVideoFile) ? "video" : selectedFiles.length === 1 ? "imagen" : "imágenes"})</>
+
               )}
             </button>
           )}
